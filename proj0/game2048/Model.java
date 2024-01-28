@@ -4,10 +4,17 @@ import java.util.Formatter;
 import java.util.Observable;
 
 
+
 /** The state of a game of 2048.
  *  @author TODO: YOUR NAME HERE
  */
+
 public class Model extends Observable {
+
+
+
+
+
     /** Current contents of the board. */
     private Board board;
     /** Current score. */
@@ -16,6 +23,11 @@ public class Model extends Observable {
     private int maxScore;
     /** True iff game is ended. */
     private boolean gameOver;
+    private static boolean check(int a,int b,int n,int m)
+    {
+        if(a<0||b<0||a>=n||b>=m)return false;
+        return true;
+    }
 
     /* Coordinate System: column C, row R of the board (where row 0,
      * column 0 is the lower-left corner of the board) will correspond
@@ -23,6 +35,7 @@ public class Model extends Observable {
      */
 
     /** Largest piece value. */
+
     public static final int MAX_PIECE = 2048;
 
     /** A new 2048 game on a board of size SIZE with no pieces
@@ -107,18 +120,62 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
+        board.setViewingPerspective(side);
         boolean changed;
         changed = false;
+
+//        if(side==Side.SOUTH) {
+//            System.out.println("south");
+//            return false;
+//        }
+
+            for(int col=0;col<4;col++)
+            {
+                int last_val=0;
+                int last_row=3;
+                for(int row=3;row>=0;row--)
+                {
+                    if(board.tile(col,row)!=null)
+                    {
+
+
+                        if(board.tile(col,row).value()==last_val)
+                        {
+
+                            Tile t=board.tile(col,row);
+                            score+=board.tile(col,row).value()*2;
+
+                            board.move(col,last_row,t);
+                            last_val=0;
+                            last_row--;
+                            changed=true;
+                        }
+                        else {
+                            if(last_val!=0)
+                            last_row--;
+                            Tile t=board.tile(col,row);
+                            last_val=board.tile(col,row).value();
+                                board.move(col,last_row,t);
+
+                                if(last_row!=row)changed=true;
+                        }
+                    }
+                }
+            }
+        //}
 
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
         checkGameOver();
-        if (changed) {
+        board.setViewingPerspective(Side.NORTH);
+        if(changed)
             setChanged();
-        }
+
+
         return changed;
+
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -137,7 +194,14 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for(int row=0;row<b.size();row++)
+        {
+            for(int col=0;col<b.size();col++)
+            {
+                if(b.tile(row,col)==null)
+                    return true;
+            }
+        }
         return false;
     }
 
@@ -147,7 +211,15 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for(int row=0;row<b.size();row++)
+        {
+            for(int col=0;col<b.size();col++)
+            {
+                if(b.tile(row,col)!=null&&b.tile(row,col).value()==MAX_PIECE)
+                    return true;
+            }
+        }
+
         return false;
     }
 
@@ -158,7 +230,23 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        int dx[]={0 , 0 ,1  ,-1 ,-1 ,1  ,-1 , 1};
+        int dy[]={1 ,-1 ,0  , 0 , 1 ,1  ,-1 ,-1};
+        for(int row=0;row<b.size();row++)
+        {
+            for(int col=0;col<b.size();col++)
+            {
+                for(int k=0;k<4;k++) {
+                    int new_row=dx[k]+row;int new_col=dy[k]+col;
+                    if(check(new_row,new_col,b.size(),b.size())==true) {
+                        if (b.tile(new_row, new_col) == null ||b.tile(row, col) == null||b.tile(row, col).value() == b.tile(new_row,new_col).value())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
