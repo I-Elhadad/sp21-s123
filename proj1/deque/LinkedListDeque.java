@@ -1,8 +1,8 @@
 package deque;
 
 public class LinkedListDeque<T> {
-    private Node sen;
-    private int size;
+     Node sen;
+     int size;
     class Node
     {
         private Node next;
@@ -17,18 +17,25 @@ public class LinkedListDeque<T> {
     }
     public LinkedListDeque()
     {
-        sen=new Node(sen,null,sen);
+        sen=new Node(null,null,null);
+        sen.prev=sen;
+        sen.next=sen;
         size=0;
-
     }
     public void addFirst(T val)
     {
-        sen.next=new Node(sen,val,sen.next);
+        Node cur=new Node(sen,val,sen.next);
+        sen.next=cur;
+        cur.next.prev=cur;
+        //sen.next=new Node(sen,val,sen.next);
         size++;
     }
     public void addLast(T val)
     {
-        sen.prev.next=new Node(sen.prev,val,sen);
+        Node cur=new Node(sen.prev,val,sen);
+        sen.prev=cur;
+        cur.prev.next=cur;
+        //sen.prev.next=new Node(sen.prev,val,sen);
         size++;
     }
     public T removeLast()
@@ -47,6 +54,7 @@ public class LinkedListDeque<T> {
     public T removeFirst()
     {
         if(sen.next!=sen) {
+
             Node cur = sen.next;
             cur.next.prev = cur.prev;
             cur.prev.next = cur.next;
