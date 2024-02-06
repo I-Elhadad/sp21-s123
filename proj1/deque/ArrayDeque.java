@@ -46,13 +46,12 @@ public class ArrayDeque<T> {
     }
     public T get(int index)
     {
-        return items[(r+index)%items.length];
-
+        return items[(r+index+1)%items.length];
     }
     public T removeFirst()
     {
 
-        if(items.length/size>=4) {
+        if(size>=1&&items.length/size>=4) {
             resize(items.length / 2);
         }
         if(size>0) {
@@ -60,14 +59,12 @@ public class ArrayDeque<T> {
             r++;
             r%=items.length;
             return items[r];
-
         }
-
         return null;
     }
     public T removeLast()
     {
-        if(items.length/size>=4) {
+        if(size>=1&&items.length/size>=4) {
             resize(items.length / 2);
         }
         if(size>0) {
@@ -75,8 +72,6 @@ public class ArrayDeque<T> {
             l--;
             l=(l+items.length)%items.length;
             return items[l];
-
-
         }
 
         else return null;
