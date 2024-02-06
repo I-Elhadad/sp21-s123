@@ -30,6 +30,7 @@ public class ArrayDeque<T> {
             resize(size*2);
         }
         items[l++]=item;
+        l%=items.length;
         size++;
     }
     public void addFirst(T item)
@@ -39,6 +40,7 @@ public class ArrayDeque<T> {
             resize(size*2);
         }
         items[r--]=item;
+        r=(r+items.length)%items.length;
         size++;
     }
     public int size()
