@@ -1,7 +1,7 @@
 package deque;
 //import afu.org.checkerframework.checker.igj.qual.I;
 
-import net.sf.saxon.om.Item;
+//import net.sf.saxon.om.Item;
 
 public class ArrayDeque<T> {
     private T[] items;
