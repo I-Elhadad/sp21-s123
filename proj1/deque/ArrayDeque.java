@@ -1,6 +1,8 @@
 package deque;
 //import afu.org.checkerframework.checker.igj.qual.I;
 
+import net.sf.saxon.om.Item;
+
 public class ArrayDeque<T> {
     private T[] items;
     private int size;
@@ -18,9 +20,9 @@ public class ArrayDeque<T> {
     {
         T[] a=(T[])new Object[capacity];
         int idx=0;
-        for(int i=r;i<=l;i++)
+        for(int i=r+1;i<items.length-(r-l+1);i++)
         {
-            a[idx]=items[i];
+            a[idx]=items[i%items.length];
             idx++;
         }
         r=capacity-1;
@@ -57,8 +59,6 @@ public class ArrayDeque<T> {
     }
     public T removeFirst()
     {
-
-
         if(size>0) {
             if(items.length/size>=4) {
                 resize(items.length / 2);
@@ -72,10 +72,10 @@ public class ArrayDeque<T> {
     }
     public T removeLast()
     {
-        if(size>=1&&items.length/size>=4) {
+        if(size>0) {
+        if(items.length/size>=4) {
             resize(items.length / 2);
         }
-        if(size>0) {
             size--;
             l--;
             l=(l+items.length)%items.length;
