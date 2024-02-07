@@ -26,7 +26,9 @@ public class ArrayDeque<T> {
             idx++;
         }
         r=capacity-1;
+        l=idx;
         items=a;
+
     }
 
     public void addLast(T item)
