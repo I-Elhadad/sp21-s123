@@ -20,7 +20,7 @@ public class ArrayDeque<T> {
     {
         T[] a=(T[])new Object[capacity];
         int idx=0;
-        for(int i=r+1;idx<items.length-(r-l+1);i++)
+        for(int i=r+1;idx<(r-l+1);i++)
         {
             a[idx]=items[i%items.length];
             idx++;
