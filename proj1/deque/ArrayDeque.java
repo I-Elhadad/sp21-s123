@@ -20,10 +20,13 @@ public class ArrayDeque<T> {
     {
         T[] a=(T[])new Object[capacity];
         int idx=0;
-        for(int i=r+1;idx<(r-l+1);i++)
+        int track=r+1;
+        while((track)%items.length!=l)
         {
-            a[idx]=items[i%items.length];
+            a[idx]=items[(track)%items.length];
             idx++;
+            track++;
+
         }
         r=capacity-1;
         l=idx;
@@ -99,10 +102,21 @@ public class ArrayDeque<T> {
         }
         System.out.println();
     }
-
-
-
+//    public static void main(String[] args) {
+//        ArrayDeque<Integer> obj1=new ArrayDeque<>();
+//        obj1.addLast(10);
+//        obj1.addLast(11);
+//        obj1.addLast(12);
+//        obj1.addLast(13);
+//        obj1.removeFirst();
+//        obj1.removeFirst();
+//        obj1.removeFirst();
+//        obj1.removeFirst();
+//
+//    }
 
 
 }
+
+
 
