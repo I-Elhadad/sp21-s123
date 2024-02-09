@@ -28,9 +28,9 @@ public class TimeAList {
 
 
             AList<Integer> solve = new AList<>();
-            NS.addLast((int)1e9/2);
+            NS.addLast(j);
             Stopwatch sw = new Stopwatch();
-            for (int i = 0; i < (int)1e9/2; i++) {
+            for (int i = 0; i < j; i++) {
                 solve.addLast(i);
             }
             double timeInSeconds = sw.elapsedTime();
