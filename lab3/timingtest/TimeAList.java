@@ -24,8 +24,7 @@ public class TimeAList {
     public static void timeAListConstruction() {
         AList<Integer> NS = new AList<>();
         AList<Double> times = new AList<>();
-        for(int j=1000;j<=1e9/5;j*=4) {
-
+        for(int j=1000;j<=128000;j*=2) {
 
             AList<Integer> solve = new AList<>();
             NS.addLast(j);
@@ -38,7 +37,5 @@ public class TimeAList {
             times.addLast(timeInSeconds);
         }
         printTimingTable(NS, times, NS);
-
-
     }
 }
