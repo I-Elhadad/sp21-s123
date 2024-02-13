@@ -137,4 +137,8 @@ public class GuitarPlayer {
 
         System.out.println("please clap");
     }
+
+    public static void main(String[] args) {
+        StdAudio.play(.3);
+    }
 }

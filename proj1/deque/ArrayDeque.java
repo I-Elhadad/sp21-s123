@@ -3,7 +3,7 @@ package deque;
 
 //import net.sf.saxon.om.Item;
 
-public class ArrayDeque<T> {
+public class ArrayDeque<T>implements Deque<T> {
     private T[] items;
     private int size;
     int l;
@@ -16,7 +16,7 @@ public class ArrayDeque<T> {
         l=0;
         r=7;
     }
-    void resize(int capacity)
+    private void resize(int capacity)
     {
         T[] a=(T[])new Object[capacity];
         int idx=0;
@@ -33,8 +33,9 @@ public class ArrayDeque<T> {
         items=a;
 
     }
+    @Override
 
-    public void addLast(T item)
+     public void addLast(T item)
     {
         if(size==items.length)
         {
@@ -44,6 +45,7 @@ public class ArrayDeque<T> {
         l%=items.length;
         size++;
     }
+    @Override
     public void addFirst(T item)
     {
         if(size==items.length)
@@ -54,14 +56,17 @@ public class ArrayDeque<T> {
         r=(r+items.length)%items.length;
         size++;
     }
+    @Override
     public int size()
     {
         return size;
     }
+    @Override
     public T get(int index)
     {
         return items[(r+index+1)%items.length];
     }
+    @Override
     public T removeFirst()
     {
         if(size>0) {
@@ -75,6 +80,7 @@ public class ArrayDeque<T> {
         }
         return null;
     }
+    @Override
     public T removeLast()
     {
         if(size>0) {
@@ -89,11 +95,13 @@ public class ArrayDeque<T> {
 
         else return null;
     }
-    public boolean isEmpty()
-    {
-        if(size==0)return true;
-        else return false;
-    }
+//    @Override
+//    public boolean isEmpty()
+//    {
+//        if(size==0)return true;
+//        else return false;
+//    }
+    @Override
     public void printDeque()
     {
         for(int i=r;i<size;i++)
@@ -102,20 +110,6 @@ public class ArrayDeque<T> {
         }
         System.out.println();
     }
-//    public static void main(String[] args) {
-//        ArrayDeque<Integer> obj1=new ArrayDeque<>();
-//        obj1.addLast(10);
-//        obj1.addLast(11);
-//        obj1.addLast(12);
-//        obj1.addLast(13);
-//        obj1.removeFirst();
-//        obj1.removeFirst();
-//        obj1.removeFirst();
-//        obj1.removeFirst();
-//
-//    }
-
-
 }
 
 

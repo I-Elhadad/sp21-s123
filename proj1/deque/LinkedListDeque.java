@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T>implements Deque<T> {
      Node sen;
      int size;
     class Node
@@ -22,6 +22,7 @@ public class LinkedListDeque<T> {
         sen.next=sen;
         size=0;
     }
+    @Override
     public void addFirst(T val)
     {
         Node cur=new Node(sen,val,sen.next);
@@ -30,6 +31,7 @@ public class LinkedListDeque<T> {
         //sen.next=new Node(sen,val,sen.next);
         size++;
     }
+    @Override
     public void addLast(T val)
     {
         Node cur=new Node(sen.prev,val,sen);
@@ -38,6 +40,7 @@ public class LinkedListDeque<T> {
         //sen.prev.next=new Node(sen.prev,val,sen);
         size++;
     }
+    @Override
     public T removeLast()
     {
         if(sen.prev!=sen) {
@@ -51,6 +54,7 @@ public class LinkedListDeque<T> {
         }
         else return null;
     }
+    @Override
     public T removeFirst()
     {
         if(sen.next!=sen) {
@@ -64,10 +68,12 @@ public class LinkedListDeque<T> {
         else return null;
 
     }
+    @Override
     public int size()
     {
         return size;
     }
+    @Override
     public T get(int idx)
     {
         Node cur=sen.next;
@@ -82,13 +88,7 @@ public class LinkedListDeque<T> {
         }
         return null;
     }
-    public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    @Override
     public void printDeque()
     {
         if(size>=1) {
@@ -110,6 +110,7 @@ public class LinkedListDeque<T> {
         else return rec(cur.next,cnt-1);
 
     }
+
     public T getRecursive(int index)
     {
         return rec(sen.next,index).item;
