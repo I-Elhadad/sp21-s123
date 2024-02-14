@@ -136,10 +136,29 @@ public class ArrayDeque<T>implements Deque<T>,Iterable<T>{
     public Iterator<T> iterator() {
         return new ArraySetIterator();
     }
+    public boolean equals(Object obj)
+    {
+        if(obj instanceof ArrayDeque)
+        {
+            ArrayDeque use=(ArrayDeque) obj;
+            if(use==this)
+                return true;
+            if(use.size()!=size)return false;
+            for(int i=0;i<size;i++)
+            {
+                if(!get(i).equals(use.get(i)))
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
 
 
     public static void main(String[] args) {
        ArrayDeque <Integer> obj1=new ArrayDeque<>();
+        ArrayDeque <Integer> obj2=new ArrayDeque<>();
         obj1.addFirst(0);
         obj1.get(0)   ;
         obj1.addFirst(2);
@@ -148,6 +167,21 @@ public class ArrayDeque<T>implements Deque<T>,Iterable<T>{
         obj1.addLast(5);
         obj1.addLast(6);
         obj1.addFirst(7);
+        obj2.addFirst(0);
+        obj2.get(0)   ;
+        obj2.addFirst(2);
+        obj2.removeFirst()    ;
+        obj2.removeFirst()   ;
+        obj2.addLast(5);
+        obj2.addLast(6);
+        //obj2.addFirst(7);
+        if (obj1.equals(obj1))
+        {
+            System.out.println("good");
+        }
+        else
+            System.out.println("bad");
+
 //        obj1.removeFirst();
 //        obj1.removeLast();
         // List<Integer> friends = new ArrayList<Integer>();
