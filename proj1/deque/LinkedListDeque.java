@@ -133,6 +133,25 @@ public class LinkedListDeque<T>implements Deque<T>,Iterable<T> {
     public Iterator<T> iterator() {
         return new DequeSetIterator();
     }
+    public boolean equals(Object obj)
+    {
+        if(obj instanceof LinkedListDeque)
+        {
+            if(obj==this)
+                return true;
+            LinkedListDeque use=(LinkedListDeque) obj;
+            if(use.size()!=size)return false;
+            for(int i=0;i<size;i++)
+            {
+                if(!get(i).equals(use.get(i)))
+                    return false;
+
+            }
+            return true;
+
+        }
+        return false;
+    }
 
 
     public T getRecursive(int index)
