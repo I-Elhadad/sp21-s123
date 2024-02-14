@@ -110,6 +110,30 @@ public class LinkedListDeque<T>implements Deque<T> {
         else return rec(cur.next,cnt-1);
 
     }
+    private class DequeSetIterator implements Iterator<T> {
+        private int wizPos;
+
+        public DequeSetIterator() {
+            wizPos = 0;
+        }
+
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+
+        public T next() {
+            T returnItem =get(wizPos) ;
+            wizPos += 1;
+            return returnItem;
+        }
+    }
+    public Iterator<T> iterator() {
+        return new DequeSetIterator();
+    }
+    public interface Iterator<T> {
+        boolean hasNext();
+        T next();
+    }
 
     public T getRecursive(int index)
     {

@@ -1,8 +1,8 @@
 package deque;
 
-import java.util.Comparator;
+import java.util.Iterator;
 
-public class ArrayDeque<T>implements Deque<T> {
+public class ArrayDeque<T>implements Deque<T>{
     private T[] items;
     private int size;
     int l;
@@ -15,6 +15,9 @@ public class ArrayDeque<T>implements Deque<T> {
         l=0;
         r=7;
     }
+//    public Iterator<T> iterator() {
+//        return new ArraySetIterator();
+//    }
     private void resize(int capacity)
     {
         T[] a=(T[])new Object[capacity];
@@ -108,6 +111,32 @@ public class ArrayDeque<T>implements Deque<T> {
             System.out.print(items[i%items.length]+" ");
         }
         System.out.println();
+
+    }
+    private class ArraySetIterator implements Iterator<T> {
+        private int wizPos;
+
+        public ArraySetIterator() {
+            wizPos = 0;
+        }
+
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+
+        public T next() {
+            //T returnItem = items[wizPos];
+            T returnItem =get(wizPos) ;
+            wizPos += 1;
+            return returnItem;
+        }
+    }
+    public Iterator<T> iterator() {
+        return new ArraySetIterator();
+    }
+    public interface Iterator<T> {
+        boolean hasNext();
+        T next();
     }
 
     public static void main(String[] args) {
@@ -120,9 +149,20 @@ public class ArrayDeque<T>implements Deque<T> {
         obj1.addLast(5);
         obj1.addLast(6);
         obj1.addFirst(7);
-        obj1.removeFirst();
-        obj1.removeLast();
+//        obj1.removeFirst();
+//        obj1.removeLast();
+       // List<Integer> friends = new ArrayList<Integer>();
+        Iterator<Integer> seer = obj1.iterator();
+
+        while(seer.hasNext()) {
+            System.out.println(seer.next());
+        }
+//        for(int i:obj1)
+//            System.out.println(i);
     }
+
+
+
 }
 
 
