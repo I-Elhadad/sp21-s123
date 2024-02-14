@@ -5,8 +5,8 @@ import java.util.Iterator;
 public class ArrayDeque<T>implements Deque<T>,Iterable<T>{
     private T[] items;
     private int size;
-    int l;
-    int r;
+    private int l;
+    private int r;
 
     public ArrayDeque()
     {
@@ -156,7 +156,7 @@ public class ArrayDeque<T>implements Deque<T>,Iterable<T>{
 
 
 
-    public static void main(String[] args) {
+    private static void main(String[] args) {
        ArrayDeque <Integer> obj1=new ArrayDeque<>();
         ArrayDeque <Integer> obj2=new ArrayDeque<>();
         obj1.addFirst(0);

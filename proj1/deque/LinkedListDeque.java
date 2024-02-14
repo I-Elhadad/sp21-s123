@@ -3,9 +3,9 @@ import java.util.Iterator;
 
 
 public class LinkedListDeque<T>implements Deque<T>,Iterable<T> {
-     Node sen;
-     int size;
-    class Node
+     private Node sen;
+     private int size;
+    private class Node
     {
         private Node next;
         private Node prev;
