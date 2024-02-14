@@ -1,5 +1,6 @@
 package deque;
 
+
 public class LinkedListDeque<T>implements Deque<T> {
      Node sen;
      int size;
@@ -127,6 +128,7 @@ public class LinkedListDeque<T>implements Deque<T> {
             return returnItem;
         }
     }
+   // @Override
     public Iterator<T> iterator() {
         return new DequeSetIterator();
     }
