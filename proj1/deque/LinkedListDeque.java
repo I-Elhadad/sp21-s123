@@ -1,7 +1,8 @@
 package deque;
+import java.util.Iterator;
 
 
-public class LinkedListDeque<T>implements Deque<T> {
+public class LinkedListDeque<T>implements Deque<T>,Iterable<T> {
      Node sen;
      int size;
     class Node
@@ -128,14 +129,11 @@ public class LinkedListDeque<T>implements Deque<T> {
             return returnItem;
         }
     }
-   // @Override
+    @Override
     public Iterator<T> iterator() {
         return new DequeSetIterator();
     }
-    public interface Iterator<T> {
-        boolean hasNext();
-        T next();
-    }
+
 
     public T getRecursive(int index)
     {

@@ -132,7 +132,7 @@ public class ArrayDeque<T>implements Deque<T>,Iterable<T>{
             return returnItem;
         }
     }
-    //@Override
+    @Override
     public Iterator<T> iterator() {
         return new ArraySetIterator();
     }
