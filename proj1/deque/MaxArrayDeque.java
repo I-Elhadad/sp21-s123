@@ -4,11 +4,17 @@ import java.util.Comparator;
 
 public class MaxArrayDeque<T> extends ArrayDeque<T>{
 
-    private Comparator<T> c;
+    private Comparator<T> obj;
+    //{
+//        @Override
+//        public int compare(T o1, T o2) {
+//            return 0;
+//        }
+//    };
 
-    public MaxArrayDeque(Comparator<T> c)
+    public MaxArrayDeque(Comparator<T> obj)
     {
-        this.c = c;
+        this.obj = obj;
     }
 
     public T max(Comparator<T> c)
@@ -27,7 +33,11 @@ public class MaxArrayDeque<T> extends ArrayDeque<T>{
 
     public T max()
     {
-        return max(c);
+        return max(obj);
+    }
+
+    public static void main(String[] args) {
+       // MaxArrayDeque <Integer>obj1=new MaxArrayDeque<>();
     }
 
 

@@ -1,7 +1,6 @@
 package deque;
-//import afu.org.checkerframework.checker.igj.qual.I;
 
-//import net.sf.saxon.om.Item;
+import java.util.Comparator;
 
 public class ArrayDeque<T>implements Deque<T> {
     private T[] items;
@@ -21,7 +20,7 @@ public class ArrayDeque<T>implements Deque<T> {
         T[] a=(T[])new Object[capacity];
         int idx=0;
         int track=r+1;
-        while((track)%items.length!=l)
+        while(idx<size)
         {
             a[idx]=items[(track)%items.length];
             idx++;
@@ -109,6 +108,20 @@ public class ArrayDeque<T>implements Deque<T> {
             System.out.print(items[i%items.length]+" ");
         }
         System.out.println();
+    }
+
+    public static void main(String[] args) {
+       ArrayDeque <Integer> obj1=new ArrayDeque<>();
+        obj1.addFirst(0);
+        obj1.get(0)   ;
+        obj1.addFirst(2);
+        obj1.removeFirst()    ;
+        obj1.removeFirst()   ;
+        obj1.addLast(5);
+        obj1.addLast(6);
+        obj1.addFirst(7);
+        obj1.removeFirst();
+        obj1.removeLast();
     }
 }
 
