@@ -28,12 +28,4 @@ public class MaxArrayDeque<T> extends ArrayDeque<T>{
     {
         return max(obj);
     }
-
-    private static void main(String[] args) {
-       // MaxArrayDeque <Integer>obj1=new MaxArrayDeque<>();
-    }
-
-
-
-
 }

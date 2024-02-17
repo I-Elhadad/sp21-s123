@@ -6,12 +6,6 @@ import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-/**
- * Plays guitar from MIDI files.
- *
- * @author Eli Lipsitz
- */
 public class GuitarPlayer {
     private Sequence sequence = null;
     private GuitarString[] strings;
@@ -128,7 +122,6 @@ public class GuitarPlayer {
                     vol[note] = vel / 127.0;
                     strings[note].pluck();
                 } else {
-                    // status
                     int d = data[j++] & 0xFF;
                     int d2 = data[j++] & 0xFF;
                 }
@@ -136,9 +129,5 @@ public class GuitarPlayer {
         }
 
         System.out.println("please clap");
-    }
-
-    public static void main(String[] args) {
-        StdAudio.play(.3);
     }
 }

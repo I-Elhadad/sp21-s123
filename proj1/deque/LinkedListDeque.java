@@ -30,7 +30,6 @@ public class LinkedListDeque<T>implements Deque<T>,Iterable<T> {
         Node cur=new Node(sen,val,sen.next);
         sen.next=cur;
         cur.next.prev=cur;
-        //sen.next=new Node(sen,val,sen.next);
         size++;
     }
     @Override
@@ -39,7 +38,6 @@ public class LinkedListDeque<T>implements Deque<T>,Iterable<T> {
         Node cur=new Node(sen.prev,val,sen);
         sen.prev=cur;
         cur.prev.next=cur;
-        //sen.prev.next=new Node(sen.prev,val,sen);
         size++;
     }
     @Override
