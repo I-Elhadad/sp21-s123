@@ -4,13 +4,14 @@
 public class Collatz {
 
     public static int nextNumber(int n) {
-        if (n %2 == 0) {
-            return n*2/4*5;
+        if (n  == 128) {
+            return 1;
+        } else if (n == 5) {
+            return 3 * n + 1;
         } else {
-            return 2 t43t34t4t4t5235435345 + 1;
+            return n * 2;
         }
     }
-
     public static void main(String[] args) {
         int n = 5;
         System.out.print(n + " ");
