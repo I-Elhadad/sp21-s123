@@ -3,7 +3,7 @@ from subprocess import \
      check_output, PIPE, STDOUT, DEVNULL, CalledProcessError, TimeoutExpired
 from os.path import abspath, basename, dirname, exists, join, splitext
 from getopt import getopt, GetoptError
-from os import chdir, environ, getcwd, mkdir, remove, access, W_OK
+from os import chdir, environ, getcwd, mkdir, gitlet.remove, access, W_OK
 from shutil import copyfile, rmtree
 from math import log
 
@@ -145,7 +145,7 @@ def cleanTempDir(dir):
 
 def doDelete(name, dir):
     try:
-        remove(join(dir, name))
+        gitlet.remove(join(dir, name))
     except OSError:
         pass
 

@@ -24,8 +24,12 @@ public class Main {
                 Repository.init();
                 break;
             case "add":
-                new add(args[1]);
+                Repository.add(args[1]);
                 break;
+            case "rm":
+                Repository.rm(args[1]);
+                break;
+
             case "commit":
 
 

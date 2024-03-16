@@ -16,13 +16,9 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 // TODO: any imports you need here
-
-import java.util.Date; // TODO: You'll likely use this in this class
 
 import static gitlet.Utils.*;
 
@@ -44,6 +40,7 @@ public class Commit implements Serializable{
     /** The message of this Commit. */
     public static String HEAD;
     private String message;
+    HashSet<String> blobs;
     private String date;
     private String parent;
     private String sh1;
@@ -54,21 +51,37 @@ public class Commit implements Serializable{
         writeContents(Repository.HEAD,sh1);
     }
 
-    public Commit(String message , String parent) {
+    public Commit(String message ) {
         // hard code the initial time
-        if (parent == null)
+        if (HEAD==null)
         {
             date = "00:00:00 UTC, Thursday, 1 January 1970";
         }
         else {
-
+            parent = HEAD;
         }
+        blobs=new HashSet<>();
+
+        if(parent!=null) {
+            File comm=join(Repository.commit,parent);
+            Commit temp = readObject(comm,Commit.class);
+            blobs=temp.blobs;
+        }
+
         this.message = message;
-        this.parent = parent;
+        File directory_add = new File(String.valueOf(Repository.addition));
+        File[] add_blobs=directory_add.listFiles();
+        assert add_blobs != null;
+        for(File it:add_blobs)
+            blobs.add(it.getName());
+        File directory_rem = new File(String.valueOf(Repository.removal));
+        File[] rem_blobs=directory_rem.listFiles();
+        assert rem_blobs != null;
+        for(File it:rem_blobs)
+            blobs.remove(it.getName());
         File f=join(Repository.CWD,"f");
         writeObject(f,this);
         byte[] byteArray =readContents(f);
-
         this.sh1 = sha1(byteArray);
         HEAD = sh1;
         save();

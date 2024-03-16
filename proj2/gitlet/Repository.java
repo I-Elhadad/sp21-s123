@@ -33,7 +33,7 @@ public class Repository {
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
-    public static final File GITLET_DIR = join(CWD, ".gitlet");
+    public static final File GITLET_DIR = join("/home/ibrahem/sp21-s123/proj2", ".gitlet");
 
     /* TODO: fill in the rest of this class. */
     public static File stage = join(GITLET_DIR,"staging area");
@@ -41,6 +41,16 @@ public class Repository {
     public static File addition = join(stage,"addition");
     public static File removal = join(stage,"removal");
     public static File HEAD = join(GITLET_DIR,"HEAD");
+    public static boolean  check_exist(String cwd,String name,String check)
+    {
+
+        File loc=join(cwd,name);
+        Commit temp = readObject(loc,Commit.class);
+        if(temp.blobs.contains(check))
+            return true;
+        return false;
+
+    }
 
 
 
@@ -59,6 +69,43 @@ public class Repository {
         HEAD.createNewFile();
 
 
-        new Commit("initial commit" , null);
+        new Commit("initial commit");
+    }
+
+
+    public static void add(String name) throws IOException {
+        String sha1;
+        byte [] arr=readContents(Utils.join(CWD , name));
+        sha1=Utils.sha1(arr);
+        File add = join(addition , sha1);
+        File rem = join(removal , sha1);
+        if(!add.exists())
+        {
+            writeContents(add,arr);
+            add.createNewFile();
+        }
+        if(rem.exists())
+        {
+            rem.delete();
+        }
+    }
+    public static void rm(String name)throws IOException
+    {
+        //System.out.println(name);
+        String sha1;
+        byte [] arr=readContents(Utils.join(CWD , name));
+        sha1=Utils.sha1(arr);
+        //System.out.println(sha1);
+        File add = join(addition , sha1);
+        File rem = join(removal , sha1);
+//        writeContents(add,arr);
+        if(add.exists()) {
+            add.delete();
+        }else if(check_exist(String.valueOf(Repository.commit),Commit.HEAD,name)) {
+                File temp = join(CWD, name);
+                writeContents(rem, arr);
+                rem.createNewFile();
+                temp.delete();
+        }else System.out.println("No reason to remove the file.");
     }
 }
