@@ -41,10 +41,9 @@ public class Repository {
     public static File addition = join(stage,"addition");
     public static File removal = join(stage,"removal");
     public static File HEAD = join(GITLET_DIR,"HEAD");
-    public static boolean  check_exist(String cwd,String name,String check)
+    public static boolean  check_exist(String cwd,String last_com,String check)
     {
-
-        File loc=join(cwd,name);
+        File loc=join(cwd,last_com);
         Commit temp = readObject(loc,Commit.class);
         if(temp.blobs.contains(check))
             return true;
@@ -101,7 +100,7 @@ public class Repository {
 //        writeContents(add,arr);
         if(add.exists()) {
             add.delete();
-        }else if(check_exist(String.valueOf(Repository.commit),Commit.HEAD,name)) {
+        }else if(check_exist(String.valueOf(join(GITLET_DIR,"commits")),Commit.HEAD,sha1)) {
                 File temp = join(CWD, name);
                 writeContents(rem, arr);
                 rem.createNewFile();

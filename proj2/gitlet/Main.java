@@ -31,6 +31,8 @@ public class Main {
                 break;
 
             case "commit":
+                new Commit(args[1]);
+                break;
 
 
             // TODO: FILL THE REST IN
