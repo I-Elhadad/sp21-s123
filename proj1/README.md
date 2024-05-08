@@ -1,6 +1,6 @@
-# Double Linked List Implementation in Java
+# Duque in Java
 
-This Java project implements a double linked list data structure using both lists and arrays.
+This Java project implements a deque data structure using both lists and arrays.
 
 ## Features
 
