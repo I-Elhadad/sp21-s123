@@ -1,5 +1,6 @@
 package gitlet;
 
+import java.io.IOException;
 
 import java.io.*;
 import java.io.File;
@@ -22,7 +23,10 @@ import static java.sql.Types.NULL;
  *
  *  @author TODO
  */
+
 public class Repository {
+
+
     /**
      * TODO: add instance variables here.
      *
