@@ -102,6 +102,7 @@ public class Repository {
     }
     public static void rm(String name)throws IOException
     {
+
         //System.out.println(name);
         String sha1;
         byte [] arr=readContents(Utils.join(CWD , name));
