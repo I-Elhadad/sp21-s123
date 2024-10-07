@@ -1,21 +1,18 @@
 package gitlet;
+
 import jdk.jshell.execution.Util;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.*;
+
 import gitlet.Utils.*;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 // TODO: any imports you need here
@@ -23,13 +20,14 @@ import java.util.*;
 import static gitlet.Utils.*;
 
 
-/** Represents a gitlet commit object.
+/**
+ * Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ * @author TODO
  */
-public class Commit implements Serializable{
+public class Commit implements Serializable {
     /**
      * TODO: add instance variables here.
      * List all instance variables of the Commit class here with a useful
@@ -37,58 +35,89 @@ public class Commit implements Serializable{
      * variable is used. We've provided one example for `message`.
      */
 
-    /** The message of this Commit. */
-    public static String HEAD= (readContentsAsString(join(Repository.GITLET_DIR,"HEAD")));
+    /**
+     * The message of this Commit.
+     */
+    public static String HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
     private String message;
-    HashSet<String> blobs;
+    public HashMap<String,String> blobs;
     private String date;
-    private String parent=null;
+    private String parent =null;
     private String sh1;
-    void save()
-    {
-        File com = join(Repository.commit , sh1);
-        writeObject(com,this);
-        writeContents(Repository.HEAD,sh1);
+    private boolean is_init;
+
+    void save() {
+        File com = join(Repository.commit, sh1);
+        writeObject(com, this);
+        writeContents(Repository.HEAD, sh1);
     }
 
-    public Commit(String message ) {
+    public boolean get_is_init() {
+        return is_init;
+    }
+
+
+    public String get_date() {
+        return date;
+    }
+
+    public String get_commit_message() {
+        return message;
+    }
+
+    public String get_parent() {
+        if(parent ==null)
+            return "";
+        return parent;
+    }
+
+    public static String get_head() {
+        HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
+        return HEAD;
+    }
+
+
+    public Commit(String message , boolean is_init) throws IOException {
         // hard code the initial time
-        if (HEAD.isEmpty())
+        this.is_init = is_init;
+        blobs=new HashMap<>();
+        if (is_init)
         {
             date = "00:00:00 UTC, Thursday, 1 January 1970";
         }
         else {
-            parent = HEAD;
+            SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
+            date = sdf.format(new Date());
+            HEAD = (readContentsAsString(join(Repository.GITLET_DIR,"HEAD")));
+            File comm=join(Repository.commit,HEAD);
+            blobs.putAll(readObject(comm, Commit.class).blobs);
+            File directory_add = new File(String.valueOf((Repository.addition)));
+            File[] add_blobs=directory_add.listFiles();
+            assert add_blobs != null;
+            for(File it:add_blobs) {
+                blobs.put(it.getName().substring(0,40),it.getName().substring(40));
+                File f=new File(Repository.blobs,it.getName());
+                f.createNewFile();
+                FileChannel src = new FileInputStream(it).getChannel();
+                FileChannel dest = new FileOutputStream(f).getChannel();
+                dest.transferFrom(src, 0, src.size());
+                it.delete();
+            }
+            File directory_rem = new File(String.valueOf((Repository.removal)));
+            File[] rem_blobs=directory_rem.listFiles();
+            assert rem_blobs != null;
+            for(File it:rem_blobs) {
+                blobs.remove(it.getName().substring(0,40),it.getName().substring(40));
+                it.delete();
+            }
         }
-        blobs=new HashSet<>();
-
-        if(parent!=null) {
-            File comm=join(Repository.commit,parent);
-            Commit temp = readObject(comm,Commit.class);
-            blobs=temp.blobs;
+        this.message = (message.substring(0));
+        this.sh1 = (sha1(blobs.toString()).substring(0));
+        if(!is_init) {
+            parent = new String(HEAD);
         }
-
-        this.message = message;
-        File directory_add = new File(String.valueOf(Repository.addition));
-        File[] add_blobs=directory_add.listFiles();
-        assert add_blobs != null;
-        for(File it:add_blobs) {
-            blobs.add(it.getName());
-            it.delete();
-        }
-
-        File directory_rem = new File(String.valueOf(Repository.removal));
-        File[] rem_blobs=directory_rem.listFiles();
-        assert rem_blobs != null;
-        for(File it:rem_blobs) {
-            blobs.remove(it.getName());
-            it.delete();
-        }
-        File f=join(Repository.CWD,"f");
-        writeObject(f,this);
-        byte[] byteArray =readContents(f);
-        this.sh1 = sha1(byteArray);
-        HEAD = new String(sh1);
+        HEAD = (sh1.substring(0));
+//        System.out.println(HEAD +" " +parent);
         save();
 
     }

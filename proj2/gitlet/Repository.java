@@ -1,15 +1,18 @@
 package gitlet;
 
 
+import java.io.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.File;
-import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
 import static gitlet.Utils.*;
+import static java.lang.String.copyValueOf;
+import static java.sql.Types.NULL;
+
 
 // TODO: any imports you need here
 
@@ -37,6 +40,9 @@ public class Repository {
 
     /* TODO: fill in the rest of this class. */
     public static File stage = join(GITLET_DIR,"staging area");
+
+    public static File blobs = join(GITLET_DIR,"blobs");
+
     public static File commit = join(GITLET_DIR,"commits");
     public static File addition = join(stage,"addition");
     public static File removal = join(stage,"removal");
@@ -45,7 +51,7 @@ public class Repository {
     {
         File loc=join(cwd,last_com);
         Commit temp = readObject(loc,Commit.class);
-        if(temp.blobs.contains(check))
+        if(temp.blobs.containsKey(check))
             return true;
         return false;
 
@@ -66,15 +72,17 @@ public class Repository {
         addition.mkdir();
         removal.mkdir();
         HEAD.createNewFile();
-
-
-        new Commit("initial commit");
+        blobs.mkdir();
+        new Commit("initial commit",true);
     }
 
 
     public static void add(String name) throws IOException {
+
         String sha1;
+
         byte [] arr=readContents(Utils.join(CWD , name));
+
         sha1=Utils.sha1(arr);
         File add = join(addition , sha1);
         File rem = join(removal , sha1);
@@ -106,5 +114,87 @@ public class Repository {
                 rem.createNewFile();
                 temp.delete();
         }else System.out.println("No reason to remove the file.");
+    }
+    public static void log()
+    {
+        String cur = copyValueOf(Commit.get_head().toCharArray());
+        Commit cur_com = readObject(join(commit,cur),Commit.class);
+//
+
+        while (true) {
+            System.out.println("===");
+            System.out.println("commit " + cur);
+            System.out.println("Date " + cur_com.get_date());
+            System.out.println(cur_com.get_commit_message());
+            System.out.println();
+            if(cur_com.get_parent().length()== 0)
+                break;
+            cur = cur_com.get_parent().substring(0);
+            cur_com = readObject(join(commit,cur),Commit.class);
+
+        }
+    }
+
+    public static void global_log()
+    {
+        File logs = new File(String.valueOf((Repository.commit)));
+        File[] allLogs=logs.listFiles();
+        assert allLogs!=null;
+        for(File it : allLogs)
+        {
+            Commit cur_com = readObject(it , Commit.class);
+            System.out.println("===");
+            System.out.println("commit " + it.getName());
+            System.out.println("Date " + cur_com.get_date());
+            System.out.println(cur_com.get_commit_message());
+            System.out.println();
+        }
+    }
+
+    public static void find(String target)
+    {
+        File logs = new File(String.valueOf((Repository.commit)));
+        File[] allLogs=logs.listFiles();
+        boolean done = false;
+        assert allLogs!=null;
+        for(File it : allLogs)
+        {
+            Commit cur_com = readObject(it , Commit.class);
+            if(cur_com.get_commit_message().equals(target))
+            {
+                done = true;
+                System.out.println(it.getName());
+            }
+        }
+        if(!done)
+        {
+            System.out.println("Found no commit with that message.");
+        }
+    }
+    public static void checkout(String name) throws IOException {
+        String cur_head=Commit.get_head();
+        checkout(name , cur_head);
+
+    }
+    public static void checkout(String name , String cur_head) throws IOException  {
+//        System.out.println(name + " " + cur_head);
+//        System.exit(0);
+        File f=join(commit,cur_head);
+        Commit cur=readObject(f,Commit.class);
+        HashMap<String,String>check=cur.blobs;
+        for (Map.Entry<String, String> check1 : check.entrySet()) {
+            //System.out.println(check1.getKey() + ": " + check1.getValue());
+            if(check1.getValue().equals(name))
+            {
+                join(CWD,name).delete();
+                File w=join(CWD, check1.getValue());
+                File cp=join(blobs,check1.getKey()+check1.getValue());
+                w.createNewFile();
+                FileChannel src = new FileInputStream(cp).getChannel();
+                FileChannel dest = new FileOutputStream(w).getChannel();
+                dest.transferFrom(src, 0, src.size());
+
+            }
+        }
     }
 }
