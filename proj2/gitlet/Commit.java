@@ -3,6 +3,7 @@ package gitlet;
 import jdk.jshell.execution.Util;
 
 import java.io.*;
+import java.util.Date;
 
 import gitlet.Utils.*;
 
@@ -86,11 +87,13 @@ public class Commit implements Serializable {
 
         if (is_init)
         {
-            date = "00:00:00 UTC, Thursday, 1 January 1970";
+            date = "Thu Jan 01 02:00:00 1970 +0200";
         }
         else {
-            SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
-            date = sdf.format(new Date());
+            Date time = new Date();
+            Formatter ff = new Formatter().format("%1$ta %1$tb %1$td %1$tT %1$tY %1$tz", time);
+            //SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
+            date = ff.toString();
             HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
             File comm = join(Repository.commit, HEAD);
             blobs.putAll(readObject(comm, Commit.class).blobs);
