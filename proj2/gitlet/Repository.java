@@ -40,7 +40,7 @@ public class Repository {
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
-    public static final File GITLET_DIR = join("/home/ibrahem/sp21-s123/proj2", ".gitlet");
+    public static final File GITLET_DIR = join(join(CWD,"gitlet"));
 
     /* TODO: fill in the rest of this class. */
     public static File stage = join(GITLET_DIR,"staging area");
