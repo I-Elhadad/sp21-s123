@@ -115,22 +115,29 @@ public class Commit implements Serializable {
             }
         }
 
+
+
+        this.message = (message.substring(0));
+        if(sh1.equals(sha1(this.toString()).substring(0)))
+        {
+            return;
+        }
+        this.sh1 = (sha1(this.toString()).substring(0));
+
+        if(!is_init) {
+            parent = new String(HEAD);
+        }
+        HEAD = (sh1.substring(0));
+//        System.out.println(HEAD +" " +parent);
         }
         catch (IOException e) {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
-
-        this.message = (message.substring(0));
-        this.sh1 = (sha1(this.toString()).substring(0));
-        if(!is_init) {
-            parent = HEAD.substring(0);
-        }
-        HEAD = (sh1.substring(0));
-//        System.out.println(HEAD +" " +parent);
         save();
 
     }
+
 
     /* TODO: fill in the rest of this class. */
 }
