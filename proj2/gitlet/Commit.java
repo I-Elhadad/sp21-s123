@@ -42,7 +42,7 @@ public class Commit implements Serializable {
     private String message;
     public HashMap<String,String> blobs;
     private String date;
-    private String parent =null;
+    private String parent = null;
     private String sh1;
     private boolean is_init;
 
@@ -122,9 +122,9 @@ public class Commit implements Serializable {
         }
 
         this.message = (message.substring(0));
-        this.sh1 = (sha1(blobs.toString()).substring(0));
+        this.sh1 = (sha1(this.toString()).substring(0));
         if(!is_init) {
-            parent = new String(HEAD);
+            parent = HEAD.substring(0);
         }
         HEAD = (sh1.substring(0));
 //        System.out.println(HEAD +" " +parent);

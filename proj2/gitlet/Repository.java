@@ -116,7 +116,6 @@ public class Repository {
     {
         try {
 
-
             //System.out.println(name);
             String sha1;
             byte[] arr = readContents(Utils.join(CWD, name));
@@ -151,9 +150,9 @@ public class Repository {
             System.out.println("Date " + cur_com.get_date());
             System.out.println(cur_com.get_commit_message());
             System.out.println();
-            if(cur_com.get_parent().length()== 0)
+            if(cur_com.get_parent().isEmpty())
                 break;
-            cur = cur_com.get_parent().substring(0);
+            cur = cur_com.get_parent();
             cur_com = readObject(join(commit,cur),Commit.class);
 
         }
@@ -222,7 +221,6 @@ public class Repository {
                     FileChannel src = new FileInputStream(cp).getChannel();
                     FileChannel dest = new FileOutputStream(w).getChannel();
                     dest.transferFrom(src, 0, src.size());
-
                 }
             }
         } catch (IOException e) {
