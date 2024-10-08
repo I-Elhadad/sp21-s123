@@ -77,10 +77,13 @@ public class Commit implements Serializable {
     }
 
 
-    public Commit(String message , boolean is_init) throws IOException {
+    public Commit(String message , boolean is_init)  {
         // hard code the initial time
         this.is_init = is_init;
         blobs=new HashMap<>();
+        try {
+
+
         if (is_init)
         {
             date = "00:00:00 UTC, Thursday, 1 January 1970";
@@ -88,15 +91,15 @@ public class Commit implements Serializable {
         else {
             SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
             date = sdf.format(new Date());
-            HEAD = (readContentsAsString(join(Repository.GITLET_DIR,"HEAD")));
-            File comm=join(Repository.commit,HEAD);
+            HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
+            File comm = join(Repository.commit, HEAD);
             blobs.putAll(readObject(comm, Commit.class).blobs);
             File directory_add = new File(String.valueOf((Repository.addition)));
-            File[] add_blobs=directory_add.listFiles();
+            File[] add_blobs = directory_add.listFiles();
             assert add_blobs != null;
-            for(File it:add_blobs) {
-                blobs.put(it.getName().substring(0,40),it.getName().substring(40));
-                File f=new File(Repository.blobs,it.getName());
+            for (File it : add_blobs) {
+                blobs.put(it.getName().substring(0, 40), it.getName().substring(40));
+                File f = new File(Repository.blobs, it.getName());
                 f.createNewFile();
                 FileChannel src = new FileInputStream(it).getChannel();
                 FileChannel dest = new FileOutputStream(f).getChannel();
@@ -104,13 +107,20 @@ public class Commit implements Serializable {
                 it.delete();
             }
             File directory_rem = new File(String.valueOf((Repository.removal)));
-            File[] rem_blobs=directory_rem.listFiles();
+            File[] rem_blobs = directory_rem.listFiles();
             assert rem_blobs != null;
-            for(File it:rem_blobs) {
-                blobs.remove(it.getName().substring(0,40),it.getName().substring(40));
+            for (File it : rem_blobs) {
+                blobs.remove(it.getName().substring(0, 40), it.getName().substring(40));
                 it.delete();
             }
         }
+
+        }
+        catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         this.message = (message.substring(0));
         this.sh1 = (sha1(blobs.toString()).substring(0));
         if(!is_init) {

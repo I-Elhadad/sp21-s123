@@ -64,61 +64,80 @@ public class Repository {
 
 
 
-    public static void init() throws IOException {
+    public static void init()  {
         if(GITLET_DIR.exists())
         {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             System.exit(0);
         }
-        GITLET_DIR.mkdir();
-        stage.mkdir();
-        commit.mkdir();
-        addition.mkdir();
-        removal.mkdir();
-        HEAD.createNewFile();
-        blobs.mkdir();
-        new Commit("initial commit",true);
-    }
+        try {
 
 
-    public static void add(String name) throws IOException {
-
-        String sha1;
-
-        byte [] arr=readContents(Utils.join(CWD , name));
-
-        sha1=Utils.sha1(arr);
-        File add = join(addition , sha1);
-        File rem = join(removal , sha1);
-        if(!add.exists())
-        {
-            writeContents(add,arr);
-            add.createNewFile();
-        }
-        if(rem.exists())
-        {
-            rem.delete();
+            GITLET_DIR.mkdir();
+            stage.mkdir();
+            commit.mkdir();
+            addition.mkdir();
+            removal.mkdir();
+            HEAD.createNewFile();
+            blobs.mkdir();
+            new Commit("initial commit", true);
+        }catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-    public static void rm(String name)throws IOException
+
+
+    public static void add(String name)  {
+        try {
+
+
+            String sha1;
+
+            byte[] arr = readContents(Utils.join(CWD, name));
+
+            sha1 = Utils.sha1(arr);
+            File add = join(addition, sha1);
+            File rem = join(removal, sha1);
+            if (!add.exists()) {
+                writeContents(add, arr);
+                add.createNewFile();
+            }
+            if (rem.exists()) {
+                rem.delete();
+            }
+        }
+        catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public static void rm(String name)
     {
+        try {
 
-        //System.out.println(name);
-        String sha1;
-        byte [] arr=readContents(Utils.join(CWD , name));
-        sha1=Utils.sha1(arr);
-        //System.out.println(sha1);
-        File add = join(addition , sha1);
-        File rem = join(removal , sha1);
+
+            //System.out.println(name);
+            String sha1;
+            byte[] arr = readContents(Utils.join(CWD, name));
+            sha1 = Utils.sha1(arr);
+            //System.out.println(sha1);
+            File add = join(addition, sha1);
+            File rem = join(removal, sha1);
 //        writeContents(add,arr);
-        if(add.exists()) {
-            add.delete();
-        }else if(check_exist(String.valueOf(join(GITLET_DIR,"commits")),Commit.HEAD,sha1)) {
+            if (add.exists()) {
+                add.delete();
+            } else if (check_exist(String.valueOf(join(GITLET_DIR, "commits")), Commit.HEAD, sha1)) {
                 File temp = join(CWD, name);
                 writeContents(rem, arr);
                 rem.createNewFile();
                 temp.delete();
-        }else System.out.println("No reason to remove the file.");
+            } else System.out.println("No reason to remove the file.");
+        }
+        catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     public static void log()
     {
@@ -176,30 +195,40 @@ public class Repository {
             System.out.println("Found no commit with that message.");
         }
     }
-    public static void checkout(String name) throws IOException {
-        String cur_head=Commit.get_head();
-        checkout(name , cur_head);
+    public static void checkout(String name) {
+
+
+            String cur_head = Commit.get_head();
+            checkout(name, cur_head);
+
 
     }
-    public static void checkout(String name , String cur_head) throws IOException  {
+    public static void checkout(String name , String cur_head) {
 //        System.out.println(name + " " + cur_head);
 //        System.exit(0);
-        File f=join(commit,cur_head);
-        Commit cur=readObject(f,Commit.class);
-        HashMap<String,String>check=cur.blobs;
-        for (Map.Entry<String, String> check1 : check.entrySet()) {
-            //System.out.println(check1.getKey() + ": " + check1.getValue());
-            if(check1.getValue().equals(name))
-            {
-                join(CWD,name).delete();
-                File w=join(CWD, check1.getValue());
-                File cp=join(blobs,check1.getKey()+check1.getValue());
-                w.createNewFile();
-                FileChannel src = new FileInputStream(cp).getChannel();
-                FileChannel dest = new FileOutputStream(w).getChannel();
-                dest.transferFrom(src, 0, src.size());
+        try {
 
+
+            File f = join(commit, cur_head);
+            Commit cur = readObject(f, Commit.class);
+            HashMap<String, String> check = cur.blobs;
+            for (Map.Entry<String, String> check1 : check.entrySet()) {
+                //System.out.println(check1.getKey() + ": " + check1.getValue());
+                if (check1.getValue().equals(name)) {
+                    join(CWD, name).delete();
+                    File w = join(CWD, check1.getValue());
+                    File cp = join(blobs, check1.getKey() + check1.getValue());
+                    w.createNewFile();
+                    FileChannel src = new FileInputStream(cp).getChannel();
+                    FileChannel dest = new FileOutputStream(w).getChannel();
+                    dest.transferFrom(src, 0, src.size());
+
+                }
             }
+        } catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-}
+
+    }

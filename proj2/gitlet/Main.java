@@ -20,7 +20,7 @@ public class Main {
             System.exit(0);
         }
         String firstArg = args[0];
-        try {
+
             switch(firstArg) {
                 case "init":
                     Repository.init();
@@ -55,9 +55,6 @@ public class Main {
                         case 2:
                             break;
                     }
-        } }catch (IOException e) {
-            System.err.println("An error occurred: " + e.getMessage());
-            e.printStackTrace();
         }
 
 
