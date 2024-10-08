@@ -118,7 +118,7 @@ public class Commit implements Serializable {
 
 
         this.message = (message.substring(0));
-        if(sh1.equals(sha1(this.toString()).substring(0)))
+        if(HEAD.equals(sha1(this.toString()).substring(0)))
         {
             return;
         }
