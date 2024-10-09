@@ -41,7 +41,7 @@ public class Commit implements Serializable {
      */
     public static String HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
     private String message;
-    public HashMap<String,String> blobs;
+    public HashMap<String,String> blobs; // sha1 of the file and the name of the file
     private String date;
     private String parent = null;
     private String sh1;
@@ -85,52 +85,53 @@ public class Commit implements Serializable {
         try {
 
 
-        if (is_init)
-        {
-            date = "Thu Jan 01 02:00:00 1970 +0200";
-        }
-        else {
-            Date time = new Date();
-            Formatter ff = new Formatter().format("%1$ta %1$tb %1$td %1$tT %1$tY %1$tz", time);
-            //SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
-            date = ff.toString();
-            HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
-            File comm = join(Repository.commit, HEAD);
-            blobs.putAll(readObject(comm, Commit.class).blobs);
-            File directory_add = new File(String.valueOf((Repository.addition)));
-            File[] add_blobs = directory_add.listFiles();
-            assert add_blobs != null;
-            for (File it : add_blobs) {
-                blobs.put(it.getName().substring(0, 40), it.getName().substring(40));
-                File f = new File(Repository.blobs, it.getName());
-                f.createNewFile();
-                FileChannel src = new FileInputStream(it).getChannel();
-                FileChannel dest = new FileOutputStream(f).getChannel();
-                dest.transferFrom(src, 0, src.size());
-                it.delete();
+            if (is_init)
+            {
+                date = "Thu Jan 01 02:00:00 1970 +0200";
             }
-            File directory_rem = new File(String.valueOf((Repository.removal)));
-            File[] rem_blobs = directory_rem.listFiles();
-            assert rem_blobs != null;
-            for (File it : rem_blobs) {
-                blobs.remove(it.getName().substring(0, 40), it.getName().substring(40));
-                it.delete();
+            else {
+                Date time = new Date();
+                Formatter ff = new Formatter().format("%1$ta %1$tb %1$td %1$tT %1$tY %1$tz", time);
+                //SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
+                date = ff.toString();
+                HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
+                File comm = join(Repository.commit, HEAD);
+                blobs.putAll(readObject(comm, Commit.class).blobs);
+                File directory_add = new File(String.valueOf((Repository.addition)));
+                File[] add_blobs = directory_add.listFiles();
+                assert add_blobs != null;
+                for (File it : add_blobs) {
+                    blobs.put(it.getName().substring(0, 40), it.getName().substring(40));
+                    File f = new File(Repository.blobs, it.getName());
+                    f.createNewFile();
+                    FileChannel src = new FileInputStream(it).getChannel();
+                    FileChannel dest = new FileOutputStream(f).getChannel();
+                    dest.transferFrom(src, 0, src.size());
+                    it.delete();
+                }
+                File directory_rem = new File(String.valueOf((Repository.removal)));
+                File[] rem_blobs = directory_rem.listFiles();
+                assert rem_blobs != null;
+                if(rem_blobs.length==0&&add_blobs.length==0)return;
+                for (File it : rem_blobs) {
+                    blobs.remove(it.getName().substring(0, 40), it.getName().substring(40));
+                    it.delete();
+                }
             }
-        }
 
 
 
-        this.message = (message.substring(0));
-        if(HEAD.equals(sha1(this.toString()).substring(0)))
-        {
-            return;
-        }
-        this.sh1 = (sha1(this.toString()).substring(0));
+            this.message = (message.substring(0));
+            if(HEAD.equals(sha1(this.toString() + date).substring(0)))
+            {
+                return;
+            }
+            this.sh1 = (sha1(this.toString() + date).substring(0));
 
-        if(!is_init) {
-            parent = new String(HEAD);
-        }
-        HEAD = (sh1.substring(0));
+            if(!is_init) {
+                parent = new String(HEAD);
+            }
+            HEAD = (sh1.substring(0));
 //        System.out.println(HEAD +" " +parent);
         }
         catch (IOException e) {

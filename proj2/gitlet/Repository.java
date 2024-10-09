@@ -97,8 +97,8 @@ public class Repository {
             byte[] arr = readContents(Utils.join(CWD, name));
 
             sha1 = Utils.sha1(arr);
-            File add = join(addition, sha1);
-            File rem = join(removal, sha1);
+            File add = join(addition, sha1 + name);
+            File rem = join(removal, sha1 + name);
             if (!add.exists()) {
                 writeContents(add, arr);
                 add.createNewFile();
@@ -121,12 +121,12 @@ public class Repository {
             byte[] arr = readContents(Utils.join(CWD, name));
             sha1 = Utils.sha1(arr);
             //System.out.println(sha1);
-            File add = join(addition, sha1);
-            File rem = join(removal, sha1);
+            File add = join(addition, sha1 + name);
+            File rem = join(removal, sha1 + name);
 //        writeContents(add,arr);
             if (add.exists()) {
                 add.delete();
-            } else if (check_exist(String.valueOf(join(GITLET_DIR, "commits")), Commit.HEAD, sha1)) {
+            } else if (check_exist(String.valueOf(join(GITLET_DIR, "commits")), Commit.HEAD, sha1 + name)) {
                 File temp = join(CWD, name);
                 writeContents(rem, arr);
                 rem.createNewFile();
@@ -168,7 +168,7 @@ public class Repository {
             Commit cur_com = readObject(it , Commit.class);
             System.out.println("===");
             System.out.println("commit " + it.getName());
-            System.out.println("Date " + cur_com.get_date());
+            System.out.println("Date: " + cur_com.get_date());
             System.out.println(cur_com.get_commit_message());
             System.out.println();
         }
@@ -197,8 +197,8 @@ public class Repository {
     public static void checkout(String name) {
 
 
-            String cur_head = Commit.get_head();
-            checkout(name, cur_head);
+        String cur_head = Commit.get_head();
+        checkout(name, cur_head);
 
 
     }
@@ -229,4 +229,4 @@ public class Repository {
         }
     }
 
-    }
+}
