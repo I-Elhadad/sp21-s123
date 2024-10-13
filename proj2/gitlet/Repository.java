@@ -607,7 +607,7 @@ public class Repository {
                 }
             }
 
-            Commit new_commit = new Commit("Merged " + cur_branch + " with " + name + ".", false);
+            Commit new_commit = new Commit("Merged " + name + " into " + cur_branch + ".", false);
             new_commit.parent = Commit.HEAD;
             new_commit.second_parent = branches.get(name);
             new_commit.save_branch();
