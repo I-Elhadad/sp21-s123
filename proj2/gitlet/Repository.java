@@ -623,6 +623,13 @@ public class Repository {
             e.printStackTrace();
         }
     }
+    public static void appendToFile(File file, String content) {
+        try (FileWriter writer = new FileWriter(file, true)) {  // 'true' enables append mode
+            writer.write(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static boolean check_for_conflict(String cur , String given, String name) throws IOException {
 
@@ -631,13 +638,14 @@ public class Repository {
         File cur_file = join(blobs, cur + name);
         File given_file = join(blobs, given + name);
         File w = join(CWD, name);
+        w.delete();
         // i want to overwrite the w if it  exists
         w.createNewFile();
-        writeContents(w, "<<<<<<< HEAD\n");
-        writeContents(w, readContentsAsString(cur_file));
-        writeContents(w, "=======\n");
-        writeContents(w, readContentsAsString(given_file));
-        writeContents(w, ">>>>>>>\n");
+        appendToFile(w, "<<<<<<< HEAD\n");
+        appendToFile(w, readContentsAsString(cur_file));
+        appendToFile(w, "=======\n");
+        appendToFile(w, readContentsAsString(given_file));
+        appendToFile(w, ">>>>>>>\n");
         add(name);
         return true;
 
