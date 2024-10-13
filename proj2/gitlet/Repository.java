@@ -558,6 +558,7 @@ public class Repository {
                         rm(it.getValue());
                     } else {
                         is_conflict = true;
+                        check_for_conflict(it.getKey(),it.getValue());
                     }
 
                 } else if (!cur_blobs.containsValue(it.getValue()) && given_blobs.containsValue(it.getValue())) {
@@ -566,7 +567,8 @@ public class Repository {
                     } else {
                         checkout(it.getValue(), branches.get(name));
                         add(it.getValue());
-                        is_conflict = true;
+                        is_conflict =true;
+                        check_for_conflict(it.getKey(),it.getValue());
                     }
                 }
             }
@@ -645,6 +647,23 @@ public class Repository {
         appendToFile(w, readContentsAsString(cur_file));
         appendToFile(w, "=======\n");
         appendToFile(w, readContentsAsString(given_file));
+        appendToFile(w, ">>>>>>>\n");
+        add(name);
+        return true;
+
+    }
+    private static boolean check_for_conflict(String cur ,  String name) throws IOException {
+
+
+        // conflict
+        File cur_file = join(blobs, cur + name);
+        File w = join(CWD, name);
+        w.delete();
+        // i want to overwrite the w if it  exists
+        w.createNewFile();
+        appendToFile(w, "<<<<<<< HEAD\n");
+        appendToFile(w, readContentsAsString(cur_file));
+        appendToFile(w, "=======\n");
         appendToFile(w, ">>>>>>>\n");
         add(name);
         return true;
