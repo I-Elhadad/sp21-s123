@@ -37,6 +37,7 @@ public class Repository {
     public static File removal = join(stage, "removal");
     public static File HEAD = join(GITLET_DIR, "HEAD");
     public static File branches_file = join(GITLET_DIR, "branches");
+    public static File split_point_file = join(GITLET_DIR, "split_point");
     public static HashMap<String, String> branches = new HashMap<>();
     public static String cur_branch = new String("master");
     public static File current_branch = join(GITLET_DIR, "current_branch");
@@ -68,6 +69,7 @@ public class Repository {
             blobs.mkdir();
             branches_file.createNewFile();
             current_branch.createNewFile();
+            split_point_file.createNewFile();
 
             new Commit("initial commit", true);
         } catch (IOException e) {
@@ -299,6 +301,7 @@ public class Repository {
             for (String it : files) {
                 if (it.equals(".gitlet"))
                     continue;
+                if(it.equals("script.sh"))continue;
                 if (!blobs.containsValue(it)) {
                     System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                     System.exit(0);
@@ -312,6 +315,7 @@ public class Repository {
             List<String> st = plainFilenamesIn(CWD);
             for (String it : st) {
                 File x = join(CWD, it);
+                if(it.equals("script.sh"))continue;
                 x.delete();
             }
 
@@ -466,6 +470,8 @@ public class Repository {
     public static void merge(String name) {
         try {
             Commit.readMap();
+
+
             if (!branches.containsKey(name)) {
                 System.out.println("A branch with that name does not exist.");
                 System.exit(0);
@@ -474,9 +480,22 @@ public class Repository {
                 System.out.println("Cannot merge a branch with itself.");
                 System.exit(0);
             }
+//            if(!Commit.split_point.containsKey(new Pair(cur_branch, name)))
+//            {
+//                System.out.println("WTF");
+//                System.exit(0);
+//            }
+            String split_commit="" ;
+            for (Map.Entry<Pair, String> entry : Commit.split_point.entrySet()) {
+                Pair key = entry.getKey();
+                String value = entry.getValue();
+                if(key.first.equals(cur_branch)&&key.second.equals(name)) {
+                    split_commit = value;
+                    break;
+                }
+            }
 
-            String split_commit = Commit.split_point.get(new Pair(cur_branch, name));
-            if (split_commit.equals(Commit.HEAD)) {
+            if (split_commit.equals(Commit.get_head())) {
                 System.out.println("Given branch is an ancestor of the current branch.");
                 System.exit(0);
             }

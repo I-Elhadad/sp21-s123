@@ -40,10 +40,10 @@ public class Commit implements Serializable {
     static void save_branch() {
         File branch = join(Repository.GITLET_DIR, "branches_file");
         writeObject(branch, Repository.branches);
-
         File branch2 = join(Repository.GITLET_DIR, "current_branch");
         writeObject(branch2, Repository.cur_branch);
-
+        File branch3 = join(Repository.GITLET_DIR, "split_point");
+        writeObject(branch3, split_point);
     }
 
     public static String find_split_point(String branch1, String branch2) {
@@ -81,6 +81,8 @@ public class Commit implements Serializable {
         Repository.branches = (HashMap<String, String>) readObject(branch, HashMap.class);
         File branch2 = join(Repository.GITLET_DIR, "current_branch");
         Repository.cur_branch = readObject(branch2, String.class);
+        File branch3 = join(Repository.GITLET_DIR, "split_point");
+        split_point = readObject(branch3, HashMap.class);
     }
 
     public Commit(String message, boolean is_init) {
@@ -158,6 +160,7 @@ public class Commit implements Serializable {
 
 
             if (is_init) {
+                split_point.put(new Pair("3n3n3n","teeeeeeet"),"3n3n3n3n3n");
                 Repository.branches.put("master", sh1);
                 Repository.cur_branch = "master";
             } else {
