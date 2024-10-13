@@ -547,7 +547,7 @@ public class Repository {
                         }
 
                         if (!sha1.equals(sha2)) {
-                            is_conflict = check_for_conflict(sha1, sha2, it);
+                            is_conflict = check_for_conflict(sha1, sha2, it.getValue());
                         }
                     }
                 } else if (cur_blobs.containsValue(it.getValue()) && !given_blobs.containsValue(it.getValue())) {
@@ -568,6 +568,45 @@ public class Repository {
                 }
             }
 
+            for (Map.Entry<String, String> it : given_blobs.entrySet()) {
+                if(!split_blobs.containsValue(it.getValue()))
+                {
+                    if(cur_blobs.containsValue(it.getValue()))
+                    {
+                        if(cur_blobs.containsKey(it.getKey()))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            String sha1 = "", sha2 = "";
+                            for (Map.Entry<String, String> it2 : cur_blobs.entrySet()) {
+                                if (it2.getValue().equals(it.getValue())) {
+                                    sha1 = it2.getKey();
+                                    break;
+                                }
+                            }
+
+                            for (Map.Entry<String, String> it2 : given_blobs.entrySet()) {
+                                if (it2.getValue().equals(it.getValue())) {
+                                    sha2 = it2.getKey();
+                                    break;
+                                }
+                            }
+
+                            if (!sha1.equals(sha2)) {
+                                is_conflict = check_for_conflict(sha1, sha2, it.getValue());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        checkout(it.getValue(), branches.get(name));
+                        add(it.getValue());
+                    }
+                }
+            }
+
             Commit new_commit = new Commit("Merged " + cur_branch + " with " + name + ".", false);
             new_commit.parent = Commit.HEAD;
             new_commit.second_parent = branches.get(name);
@@ -582,13 +621,13 @@ public class Repository {
         }
     }
 
-    private static boolean check_for_conflict(String cur , String given, Map.Entry<String, String> it) throws IOException {
+    private static boolean check_for_conflict(String cur , String given, String name) throws IOException {
 
 
         // conflict
-        File cur_file = join(blobs, cur + it.getValue());
-        File given_file = join(blobs, given + it.getValue());
-        File w = join(CWD, it.getValue());
+        File cur_file = join(blobs, cur + name);
+        File given_file = join(blobs, given + name);
+        File w = join(CWD, name);
         // i want to overwrite the w if it  exists
         w.createNewFile();
         writeContents(w, "<<<<<<< HEAD\n");
@@ -596,7 +635,7 @@ public class Repository {
         writeContents(w, "=======\n");
         writeContents(w, readContentsAsString(given_file));
         writeContents(w, ">>>>>>>\n");
-        add(it.getValue());
+        add(name);
         return true;
 
     }
