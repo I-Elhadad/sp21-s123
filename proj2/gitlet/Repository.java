@@ -52,6 +52,7 @@ public class Repository {
     }
 
 
+
     public static void init() {
         if (GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
@@ -557,18 +558,34 @@ public class Repository {
                     if (cur_blobs.containsKey(it.getKey())) {
                         rm(it.getValue());
                     } else {
+                        String sha1 = "";
+                        for (Map.Entry<String, String> it2 : cur_blobs.entrySet()) {
+                            if (it2.getValue().equals(it.getValue())) {
+                                sha1 = it2.getKey();
+                                break;
+                            }
+                        }
+
+
                         is_conflict = true;
-                        check_for_conflict(it.getKey(),it.getValue());
+                        check_for_conflict(sha1,it.getValue());
                     }
 
                 } else if (!cur_blobs.containsValue(it.getValue()) && given_blobs.containsValue(it.getValue())) {
                     if (given_blobs.containsKey(it.getKey())) {
                         continue;
                     } else {
+                        String sha2 = "";
+                        for (Map.Entry<String, String> it2 : given_blobs.entrySet()) {
+                            if (it2.getValue().equals(it.getValue())) {
+                                sha2 = it2.getKey();
+                                break;
+                            }
+                        }
                         checkout(it.getValue(), branches.get(name));
                         add(it.getValue());
                         is_conflict =true;
-                        check_for_conflict(it.getKey(),it.getValue());
+                        check_for_conflict(sha2,it.getValue());
                     }
                 }
             }
@@ -600,7 +617,7 @@ public class Repository {
                             }
 
                             if (!sha1.equals(sha2)) {
-                                is_conflict = check_for_conflict(sha1, sha2, it.getValue());
+                                is_conflict |= check_for_conflict(sha1, sha2, it.getValue());
                             }
                         }
                     }
@@ -611,6 +628,12 @@ public class Repository {
                     }
                 }
             }
+//            for (Map.Entry<String, String> it : cur_blobs.entrySet())
+//            {
+//
+//
+//            }
+
 
             Commit new_commit = new Commit("Merged " + name + " into " + cur_branch + ".", false);
             new_commit.parent = Commit.HEAD;
@@ -633,6 +656,7 @@ public class Repository {
         }
     }
 
+
     private static boolean check_for_conflict(String cur , String given, String name) throws IOException {
 
 
@@ -653,18 +677,18 @@ public class Repository {
 
     }
     private static boolean check_for_conflict(String cur ,  String name) throws IOException {
-
-
         // conflict
         File cur_file = join(blobs, cur + name);
         File w = join(CWD, name);
         w.delete();
         // i want to overwrite the w if it  exists
         w.createNewFile();
-        appendToFile(w, "<<<<<<< HEAD\n");
-        appendToFile(w, readContentsAsString(cur_file));
-        appendToFile(w, "=======\n");
-        appendToFile(w, ">>>>>>>\n");
+        String s="<<<<<<< HEAD\n";
+
+        s+=readContentsAsString(cur_file);
+        s+= "=======\n";
+        s+=">>>>>>>\n";
+        writeContents(w,s);
         add(name);
         return true;
 

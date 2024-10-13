@@ -36,6 +36,18 @@ public class Commit implements Serializable {
         writeObject(com, this);
         writeContents(Repository.HEAD, sh1);
     }
+//    public static String readContentsAsString(File file) {
+//        StringBuilder content = new StringBuilder();
+//        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                content.append(line).append("\n");  // Append each line followed by a newline character
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return content.toString();  // Return the complete content as a String
+//    }
 
     static void save_branch() {
         File branch = join(Repository.GITLET_DIR, "branches_file");

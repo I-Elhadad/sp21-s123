@@ -1,4 +1,5 @@
 <<<<<<< HEAD
-notwug.txt
+wug.txt
+wug2.txt
 =======
 >>>>>>>

@@ -1,2 +1,0 @@
-notwug.txt
-test
