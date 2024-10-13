@@ -438,12 +438,15 @@ public class Repository {
 
     public static void status() {
         Commit.readMap();
+        TreeMap <String,String> temp=new TreeMap<>();
+        temp.putAll(branches);
         System.out.println("=== Branches ===");
-        for (Map.Entry<String, String> it : branches.entrySet()) {
+        for (Map.Entry<String, String> it : temp.entrySet()) {
             if (it.getKey().equals(cur_branch))
                 System.out.println("*" + it.getKey());
             else
                 System.out.println(it.getKey());
+//            temp.put(it.getKey(),it.getValue());
         }
         System.out.println();
         System.out.println("=== Staged Files ===");
