@@ -16,41 +16,38 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-// TODO: any imports you need here
-
 import static gitlet.Utils.*;
+import static java.lang.Thread.sleep;
 
-
-/**
- * Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
- *  does at a high level.
- *
- * @author TODO
- */
 public class Commit implements Serializable {
-    /**
-     * TODO: add instance variables here.
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
 
-    /**
-     * The message of this Commit.
-     */
     public static String HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
     private String message;
-    public HashMap<String,String> blobs; // sha1 of the file and the name of the file
+    public HashMap<String, String> blobs; // sha1 of the file and the name of the file
     private String date;
-    private String parent = null;
+    public static HashMap<Pair , String> split_point = new HashMap<>();
+    public String parent = null;
     private String sh1;
     private boolean is_init;
+    public String second_parent = null;
 
     void save() {
         File com = join(Repository.commit, sh1);
         writeObject(com, this);
         writeContents(Repository.HEAD, sh1);
+    }
+
+    static void save_branch() {
+        File branch = join(Repository.GITLET_DIR, "branches_file");
+        writeObject(branch, Repository.branches);
+
+        File branch2 = join(Repository.GITLET_DIR, "current_branch");
+        writeObject(branch2, Repository.cur_branch);
+
+    }
+
+    public static String find_split_point(String branch1, String branch2) {
+        return split_point.get(new Pair(branch1, branch2));
     }
 
     public boolean get_is_init() {
@@ -67,7 +64,7 @@ public class Commit implements Serializable {
     }
 
     public String get_parent() {
-        if(parent ==null)
+        if (parent == null)
             return "";
         return parent;
     }
@@ -77,29 +74,51 @@ public class Commit implements Serializable {
         return HEAD;
     }
 
+    @SuppressWarnings("unchecked")
+    public static void readMap() {
 
-    public Commit(String message , boolean is_init)  {
+        File branch = join(Repository.GITLET_DIR, "branches_file");
+        Repository.branches = (HashMap<String, String>) readObject(branch, HashMap.class);
+        File branch2 = join(Repository.GITLET_DIR, "current_branch");
+        Repository.cur_branch = readObject(branch2, String.class);
+    }
+
+    public Commit(String message, boolean is_init) {
+
         // hard code the initial time
         this.is_init = is_init;
-        blobs=new HashMap<>();
+        if(!is_init && message.length() == 0)
+        {
+            System.out.println("Please enter a commit message.");
+            System.exit(0);
+        }
+        blobs = new HashMap<>();
         try {
-
-
-            if (is_init)
-            {
+            sleep(500);
+            if (is_init) {
                 date = "Thu Jan 01 02:00:00 1970 +0200";
-            }
-            else {
+            } else {
                 Date time = new Date();
                 Formatter ff = new Formatter().format("%1$ta %1$tb %1$td %1$tT %1$tY %1$tz", time);
                 //SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
                 date = ff.toString();
                 HEAD = (readContentsAsString(join(Repository.GITLET_DIR, "HEAD")));
                 File comm = join(Repository.commit, HEAD);
-                blobs.putAll(readObject(comm, Commit.class).blobs);
+
                 File directory_add = new File(String.valueOf((Repository.addition)));
                 File[] add_blobs = directory_add.listFiles();
                 assert add_blobs != null;
+                A:
+                for (Map.Entry<String, String> temp : readObject(comm, Commit.class).blobs.entrySet()) {
+                    for (File it : add_blobs) {
+                        if (it.getName().substring(40).equals(temp.getValue())) {
+                            continue A;
+                        }
+                    }
+                    blobs.put(temp.getKey(), temp.getValue());
+                }
+
+
                 for (File it : add_blobs) {
                     blobs.put(it.getName().substring(0, 40), it.getName().substring(40));
                     File f = new File(Repository.blobs, it.getName());
@@ -111,8 +130,12 @@ public class Commit implements Serializable {
                 }
                 File directory_rem = new File(String.valueOf((Repository.removal)));
                 File[] rem_blobs = directory_rem.listFiles();
+                if(rem_blobs.length == 0 && add_blobs.length == 0){
+                    System.out.println("No changes added to the commit.");
+                    System.exit(0);
+                }
+
                 assert rem_blobs != null;
-                if(rem_blobs.length==0&&add_blobs.length==0)return;
                 for (File it : rem_blobs) {
                     blobs.remove(it.getName().substring(0, 40), it.getName().substring(40));
                     it.delete();
@@ -120,28 +143,47 @@ public class Commit implements Serializable {
             }
 
 
-
             this.message = (message.substring(0));
-            if(HEAD.equals(sha1(this.toString() + date).substring(0)))
-            {
+            if (HEAD.equals(sha1(this.toString() + date).substring(0))) {
                 return;
             }
             this.sh1 = (sha1(this.toString() + date).substring(0));
 
-            if(!is_init) {
+            if (!is_init) {
                 parent = new String(HEAD);
             }
+
+
             HEAD = (sh1.substring(0));
-//        System.out.println(HEAD +" " +parent);
-        }
-        catch (IOException e) {
+
+
+            if (is_init) {
+                Repository.branches.put("master", sh1);
+                Repository.cur_branch = "master";
+            } else {
+                readMap();
+                Repository.branches.put(Repository.cur_branch, HEAD);
+            }
+
+            save_branch();
+
+
+        } catch (IOException e) {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         save();
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
 
     }
 
 
-    /* TODO: fill in the rest of this class. */
 }
