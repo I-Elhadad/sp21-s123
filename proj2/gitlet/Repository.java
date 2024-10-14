@@ -475,6 +475,17 @@ public class Repository {
         try {
             Commit.readMap();
 
+                File directory_add = new File(String.valueOf((Repository.addition)));
+                File[] add_blobs = directory_add.listFiles();
+                File directory_rem = new File(String.valueOf((Repository.removal)));
+                File[] rem_blobs = directory_rem.listFiles();
+                if(rem_blobs.length != 0 || add_blobs.length != 0){
+                    System.out.println("You have uncommitted changes.");
+                    System.exit(0);
+                }
+
+
+
 
             if (!branches.containsKey(name)) {
                 System.out.println("A branch with that name does not exist.");
@@ -508,7 +519,7 @@ public class Repository {
                 checkout(name);
                 System.exit(0);
             }
-            Commit cur = readObject(join(commit, Commit.HEAD), Commit.class);
+            Commit cur = readObject(join(commit, Commit.get_head()), Commit.class);
             Commit given = readObject(join(commit, branches.get(name)), Commit.class);
             Commit split_point = readObject(join(commit, split_commit), Commit.class);
             HashMap<String, String> cur_blobs = cur.blobs;

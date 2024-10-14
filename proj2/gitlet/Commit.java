@@ -149,6 +149,7 @@ public class Commit implements Serializable {
                     System.exit(0);
                 }
 
+
                 assert rem_blobs != null;
                 for (File it : rem_blobs) {
                     blobs.remove(it.getName().substring(0, 40), it.getName().substring(40));
