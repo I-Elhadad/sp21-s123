@@ -52,7 +52,6 @@ public class Repository {
     }
 
 
-
     public static void init() {
         if (GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
@@ -85,8 +84,7 @@ public class Repository {
         try {
             sleep(500);
 
-            if(!join(CWD, name).exists())
-            {
+            if (!join(CWD, name).exists()) {
                 System.out.println("File does not exist.");
                 System.exit(0);
             }
@@ -112,15 +110,13 @@ public class Repository {
                 }
             }
 
-            HashMap <String , String> blobs = readObject(join(commit, Commit.get_head()), Commit.class).blobs;
-            if(blobs.containsKey(sha1))
-            {
+            HashMap<String, String> blobs = readObject(join(commit, Commit.get_head()), Commit.class).blobs;
+            if (blobs.containsKey(sha1)) {
                 return;
             }
 
             File add = join(addition, sha1 + name);
             File rem = join(removal, sha1 + name);
-
 
 
             writeContents(add, arr);
@@ -149,7 +145,7 @@ public class Repository {
             File rem = join(removal, sha1 + name);
 //        writeContents(add,arr);
 
-            HashMap<String , String>blobs = readObject(join(commit, Commit.get_head()), Commit.class).blobs;
+            HashMap<String, String> blobs = readObject(join(commit, Commit.get_head()), Commit.class).blobs;
             if (add.exists()) {
                 add.delete();
             } else if (blobs.containsValue(name)) {
@@ -157,8 +153,7 @@ public class Repository {
                 writeContents(rem, arr);
                 rem.createNewFile();
                 temp.delete();
-            }
-            else {
+            } else {
                 System.out.println("No reason to remove the file.");
                 System.exit(0);
             }
@@ -169,7 +164,7 @@ public class Repository {
     }
 
     public static void log() {
-        try{
+        try {
             sleep(500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -237,8 +232,7 @@ public class Repository {
         try {
             // i want to check if there is a commit with the given id
             File f = join(commit, cur_head);
-            if(!f.exists())
-            {
+            if (!f.exists()) {
                 System.out.println("No commit with that id exists.");
                 System.exit(0);
             }
@@ -260,8 +254,7 @@ public class Repository {
                     dest.transferFrom(src, 0, src.size());
                 }
             }
-            if(!ch)
-            {
+            if (!ch) {
                 System.out.println("File does not exist in that commit.");
                 System.exit(0);
             }
@@ -302,7 +295,7 @@ public class Repository {
             for (String it : files) {
                 if (it.equals(".gitlet"))
                     continue;
-                if(it.equals("script.sh"))continue;
+                if (it.equals("script.sh")) continue;
                 if (!blobs.containsValue(it)) {
                     System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                     System.exit(0);
@@ -316,7 +309,7 @@ public class Repository {
             List<String> st = plainFilenamesIn(CWD);
             for (String it : st) {
                 File x = join(CWD, it);
-                if(it.equals("script.sh"))continue;
+                if (it.equals("script.sh")) continue;
                 x.delete();
             }
 
@@ -347,7 +340,7 @@ public class Repository {
             System.out.println("Cannot remove the current branch.");
             System.exit(0);
         }
-        Pair temp = new Pair("temp" , "temp");
+        Pair temp = new Pair("temp", "temp");
         String splet = new String("");
         for (Map.Entry<Pair, String> it : Commit.split_point.entrySet()) {
             if (it.getKey().getSecond().equals(name)) {
@@ -429,7 +422,7 @@ public class Repository {
 
             branches.put(cur_branch, sh1);
             Commit.save_branch();
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
@@ -439,7 +432,7 @@ public class Repository {
 
     public static void status() {
         Commit.readMap();
-        TreeMap <String,String> temp=new TreeMap<>();
+        TreeMap<String, String> temp = new TreeMap<>();
         temp.putAll(branches);
         System.out.println("=== Branches ===");
         for (Map.Entry<String, String> it : temp.entrySet()) {
@@ -475,16 +468,14 @@ public class Repository {
         try {
             Commit.readMap();
 
-                File directory_add = new File(String.valueOf((Repository.addition)));
-                File[] add_blobs = directory_add.listFiles();
-                File directory_rem = new File(String.valueOf((Repository.removal)));
-                File[] rem_blobs = directory_rem.listFiles();
-                if(rem_blobs.length != 0 || add_blobs.length != 0){
-                    System.out.println("You have uncommitted changes.");
-                    System.exit(0);
-                }
-
-
+            File directory_add = new File(String.valueOf((Repository.addition)));
+            File[] add_blobs = directory_add.listFiles();
+            File directory_rem = new File(String.valueOf((Repository.removal)));
+            File[] rem_blobs = directory_rem.listFiles();
+            if (rem_blobs.length != 0 || add_blobs.length != 0) {
+                System.out.println("You have uncommitted changes.");
+                System.exit(0);
+            }
 
 
             if (!branches.containsKey(name)) {
@@ -500,11 +491,35 @@ public class Repository {
 //                System.out.println("WTF");
 //                System.exit(0);
 //            }
-            String split_commit="" ;
+            HashSet<String> temp = new HashSet<>();
+            temp.add(Commit.get_head());
+            Commit cur_com = readObject(join(commit, Commit.get_head()), Commit.class);
+            while (cur_com.get_parent().length() != 0) {
+                temp.add(cur_com.get_parent());
+                cur_com = readObject(join(commit, cur_com.get_parent()), Commit.class);
+            }
+            String split_commit = "";
+            String sh = branches.get(name);
+            cur_com = readObject(join(commit, sh), Commit.class);
+            if (temp.contains(sh))
+                split_commit = new String(sh);
+            else
+                while (true) {
+
+                    if (temp.contains(cur_com.get_parent())) {
+                        split_commit = cur_com.get_parent();
+                        break;
+                    }
+                    cur_com = readObject(join(commit, cur_com.get_parent()), Commit.class);
+                }
+
+
             for (Map.Entry<Pair, String> entry : Commit.split_point.entrySet()) {
                 Pair key = entry.getKey();
                 String value = entry.getValue();
-                if(key.first.equals(cur_branch)&&key.second.equals(name)) {
+                //System.out.println(key.first + " " + key.second);
+
+                if (key.first.equals(cur_branch) && key.second.equals(name)) {
                     split_commit = value;
                     break;
                 }
@@ -521,6 +536,7 @@ public class Repository {
             }
             Commit cur = readObject(join(commit, Commit.get_head()), Commit.class);
             Commit given = readObject(join(commit, branches.get(name)), Commit.class);
+            //System.out.println(split_commit);
             Commit split_point = readObject(join(commit, split_commit), Commit.class);
             HashMap<String, String> cur_blobs = cur.blobs;
             HashMap<String, String> given_blobs = given.blobs;
@@ -579,7 +595,7 @@ public class Repository {
 
 
                         is_conflict = true;
-                        check_for_conflict(sha1,it.getValue());
+                        check_for_conflict(sha1, it.getValue());
                     }
 
                 } else if (!cur_blobs.containsValue(it.getValue()) && given_blobs.containsValue(it.getValue())) {
@@ -595,23 +611,18 @@ public class Repository {
                         }
                         checkout(it.getValue(), branches.get(name));
                         add(it.getValue());
-                        is_conflict =true;
-                        check_for_conflict(sha2,it.getValue());
+                        is_conflict = true;
+                        check_for_conflict(sha2, it.getValue());
                     }
                 }
             }
 
             for (Map.Entry<String, String> it : given_blobs.entrySet()) {
-                if(!split_blobs.containsValue(it.getValue()))
-                {
-                    if(cur_blobs.containsValue(it.getValue()))
-                    {
-                        if(cur_blobs.containsKey(it.getKey()))
-                        {
+                if (!split_blobs.containsValue(it.getValue())) {
+                    if (cur_blobs.containsValue(it.getValue())) {
+                        if (cur_blobs.containsKey(it.getKey())) {
                             continue;
-                        }
-                        else
-                        {
+                        } else {
                             String sha1 = "", sha2 = "";
                             for (Map.Entry<String, String> it2 : cur_blobs.entrySet()) {
                                 if (it2.getValue().equals(it.getValue())) {
@@ -631,9 +642,7 @@ public class Repository {
                                 is_conflict |= check_for_conflict(sha1, sha2, it.getValue());
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         checkout(it.getValue(), branches.get(name));
                         add(it.getValue());
                     }
@@ -654,11 +663,12 @@ public class Repository {
             if (is_conflict) {
                 System.out.println("Encountered a merge conflict.");
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
     public static void appendToFile(File file, String content) {
         try (FileWriter writer = new FileWriter(file, true)) {  // 'true' enables append mode
             writer.write(content);
@@ -668,7 +678,7 @@ public class Repository {
     }
 
 
-    private static boolean check_for_conflict(String cur , String given, String name) throws IOException {
+    private static boolean check_for_conflict(String cur, String given, String name) throws IOException {
 
 
         // conflict
@@ -687,19 +697,20 @@ public class Repository {
         return true;
 
     }
-    private static boolean check_for_conflict(String cur ,  String name) throws IOException {
+
+    private static boolean check_for_conflict(String cur, String name) throws IOException {
         // conflict
         File cur_file = join(blobs, cur + name);
         File w = join(CWD, name);
         w.delete();
         // i want to overwrite the w if it  exists
         w.createNewFile();
-        String s="<<<<<<< HEAD\n";
+        String s = "<<<<<<< HEAD\n";
 
-        s+=readContentsAsString(cur_file);
-        s+= "=======\n";
-        s+=">>>>>>>\n";
-        writeContents(w,s);
+        s += readContentsAsString(cur_file);
+        s += "=======\n";
+        s += ">>>>>>>\n";
+        writeContents(w, s);
         add(name);
         return true;
 
