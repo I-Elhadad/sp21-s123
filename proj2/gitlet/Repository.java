@@ -255,6 +255,7 @@ public class Repository {
                 }
             }
             if (!ch) {
+
                 System.out.println("File does not exist in that commit.");
                 System.exit(0);
             }
@@ -552,12 +553,14 @@ public class Repository {
             }
 
             if (split_commit.equals(Commit.get_head())) {
-                System.out.println("Given branch is an ancestor of the current branch.");
+                System.out.println("Current branch fast-forwarded.");
+                checkout(name);
                 System.exit(0);
             }
             if (split_commit.equals(branches.get(name))) {
-                System.out.println("Current branch fast-forwarded.");
-                checkout(name);
+                
+                System.out.println("Given branch is an ancestor of the current branch.");
+
                 System.exit(0);
             }
             Commit cur = readObject(join(commit, Commit.get_head()), Commit.class);
@@ -682,7 +685,7 @@ public class Repository {
 
 
             Commit new_commit = new Commit("Merged " + name + " into " + cur_branch + ".", false);
-            new_commit.parent = Commit.HEAD;
+            //new_commit.parent = Commit.get_head();
             new_commit.second_parent = branches.get(name);
             new_commit.save_branch();
 
