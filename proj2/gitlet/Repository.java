@@ -369,63 +369,89 @@ public class Repository {
     }
 
     public static void reset(String sh1) {
-        try {
-            File f = join(commit, sh1);
-            if (!f.exists()) {
-                System.out.println("No commit with that id exists.");
+        File f = join(commit, sh1);
+        if (!f.exists()) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+
+
+        Commit target = readObject(f, Commit.class);
+
+        Commit cur_head = readObject(join(commit, Commit.get_head()), Commit.class);
+//            for (Map.Entry<String,String> it : cur_head.blobs.entrySet()) {
+//                File x=new File(CWD,it.getValue());
+//                x.delete();
+////
+//            }
+
+
+        // I want to check if the there is untracked files in the working directory in the current commit
+
+        List<String> files = plainFilenamesIn(CWD);
+        for (String it : files) {
+            if (it.equals(".gitlet"))
+                continue;
+//                if (it.equals(".gitlet"))
+//                    continue;
+            if (cur_head.blobs.containsValue(it)) {
+                if(target.blobs.containsValue(it)) {
+                    byte[] arr = readContents(join(CWD, it));
+
+                   String sha1 = sha1(arr);
+                    sha1 = sha1(sha1 + it);
+                    if(cur_head.blobs.containsKey(sha1)&&cur_head.blobs.get(sha1).equals(it))
+                    {
+                        checkout(it,sh1);
+                    }
+                    else {
+                        System.out.println("There is an untracked file in the way; delete it or add it first.");
+                        System.exit(0);
+                    }
+
+
+                }
+
+                //
+                else
+                {
+
+                    File to_del=new File(CWD,it);
+                    to_del.delete();
+                }
+
+            }
+            else if(target.blobs.containsValue(it))
+            {
+
+                System.out.println("There is an untracked file in the way; delete it or add it first.");
                 System.exit(0);
             }
-
-
-            Commit target = readObject(f, Commit.class);
-
-            Commit cur_head = readObject(join(commit, Commit.get_head()), Commit.class);
-
-
-            // I want to check if the there is untracked files in the working directory in the current commit
-            List<String> files = plainFilenamesIn(CWD);
-            for (String it : files) {
-                if (it.equals(".gitlet"))
-                    continue;
-                if (!cur_head.blobs.containsValue(it)) {
-                    System.out.println("There is an untracked file in the way; delete it or add it first.");
-                    System.exit(0);
-                }
-            }
-
-
-            // delete all the files in the working directory
-            for (String it : files) {
-                if (it.equals(".gitlet"))
-                    continue;
-
-                File x = new File(CWD, it);
-                x.delete();
-            }
-
-            // I want to add all files in the working directory from the commit
-
-            for (Map.Entry<String, String> it : target.blobs.entrySet()) {
-                File w = join(CWD, it.getValue());
-                File cp = join(blobs, it.getKey() + it.getValue());
-                w.createNewFile();
-                FileChannel src = new FileInputStream(cp).getChannel();
-                FileChannel dest = new FileOutputStream(w).getChannel();
-                dest.transferFrom(src, 0, src.size());
-            }
-
-            // change the head to the new commit and save the branch
-            Commit.readMap();
-            Commit.HEAD = sh1;
-
-            writeContents(join(GITLET_DIR, "HEAD"), Commit.HEAD);
-
-            branches.put(cur_branch, sh1);
-            Commit.save_branch();
-        } catch (IOException e) {
-            System.err.println("An error occurred: " + e.getMessage());
-            e.printStackTrace();
         }
+
+
+        // delete all the files in the working directory
+
+
+        // I want to add all files in the working directory from the commit
+
+//            for (Map.Entry<String, String> it : target.blobs.entrySet()) {
+//                File w = join(CWD, it.getValue());
+//                File cp = join(blobs, it.getKey() + it.getValue());
+//                w.createNewFile();
+//                FileChannel src = new FileInputStream(cp).getChannel();
+//                FileChannel dest = new FileOutputStream(w).getChannel();
+//                dest.transferFrom(src, 0, src.size());
+//            }
+
+        // change the head to the new commit and save the branch
+        Commit.readMap();
+        Commit.HEAD = sh1;
+
+        writeContents(join(GITLET_DIR, "HEAD"), Commit.HEAD);
+
+        branches.put(cur_branch, sh1);
+        Commit.save_branch();
 
     }
 

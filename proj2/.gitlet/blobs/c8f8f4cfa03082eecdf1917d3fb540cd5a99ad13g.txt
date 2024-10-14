@@ -1,6 +1,0 @@
-<<<<<<< HEAD
-notwug.txt
-=======
-notwug.txt
-notwug.txt
->>>>>>>
